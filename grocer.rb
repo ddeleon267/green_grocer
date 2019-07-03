@@ -1,5 +1,5 @@
 require "pry"
-def consolidate_cart(cart)
+def consolidate_cart(cart) # if you don't iterate through the item
   consolidated_cart = {}
 
   cart.each do |item|
@@ -13,10 +13,26 @@ def consolidate_cart(cart)
         count: 1
       }
     end
-
   end
   consolidated_cart
 end
+
+def consolidate_cart(cart) # if you iterate through the item
+  consolidated_cart = {}
+
+  cart.each do |item|
+    item.each do |name, details|
+      if consolidated_cart[name]
+        consolidated_cart[name][:count] += 1
+      else
+        consolidated_cart[name] = details
+        consolidated_cart[name][:count] = 1
+      end
+    end
+  end
+  consolidated_cart
+end
+
 
 def apply_coupons(cart, coupons)
   # code here
