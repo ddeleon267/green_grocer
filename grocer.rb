@@ -35,9 +35,15 @@ end
 def apply_coupons(cart, coupons)
   coupons.each do |coupon|
     item_name = coupon[:item]
-    if cart[item_name] && cart[item_name][:count] >= coupon[:num] # this method will pass without second half of condition but will cause checkout method to fail later
+    if cart[item_name] && cart[item_name][:count] >= coupon[:num]
+      # this method will pass without second half of the condition above but will cause checkout method to fail later
+      # basically, you need to check that the uncouponed items *left* in the cart is more than the original num of couponed items,
+      # so that you're not ultimately couponing more items than you have coupons for
+      # you decrement the number of uncouponed items, but never decrement the number of coupons, so you need to
+      # account for this, or you'll apply more coupons than you have, essentially
+      # failure occurs when there are 3 beers, but only 2 coupons for them
       if cart["#{item_name} W/COUPON"]
-        cart["#{item_name} W/COUPON"][:count] += coupon[:num]
+        cart["#{item_name} W/COUPON"][:count] += coupon[:num] #update count of couponed items
       else
         cart["#{item_name} W/COUPON"] = {
           price: coupon[:cost] / coupon[:num],
@@ -45,7 +51,7 @@ def apply_coupons(cart, coupons)
           count: coupon[:num]
         }
       end
-      cart[item_name][:count] -= coupon[:num]
+      cart[item_name][:count] -= coupon[:num] # update count of un-couponed items
     end
   end
   cart
