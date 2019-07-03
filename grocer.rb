@@ -36,7 +36,7 @@ end
 
 def apply_coupons(cart, coupons)
   coupons.each do |coupon|
-    if cart[coupon[:item]] && cart[coupon[:item]][:count] >= coupon[:num]
+    if cart[coupon[:item]] && cart[coupon[:item]][:count] >= coupon[:num] # this method will pass without second half of condition but will cause checkout method to fail
       if cart["#{coupon[:item]} W/COUPON"]
         cart["#{coupon[:item]} W/COUPON"][:count] += coupon[:num]
 
@@ -70,5 +70,5 @@ def checkout(cart, coupons)
   final_cart.each do |item_name, details|
     total += details[:price]*details[:count]
   end
-  total
+  total > 100 ? total * 0.9 : total
 end
