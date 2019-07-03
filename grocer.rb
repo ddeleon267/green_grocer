@@ -1,7 +1,6 @@
 require "pry"
 def consolidate_cart(cart) # if you don't iterate through the item
   consolidated_cart = {}
-
   cart.each do |item|
     item_name = item.keys.first
     if consolidated_cart[item_name]
@@ -17,37 +16,36 @@ def consolidate_cart(cart) # if you don't iterate through the item
   consolidated_cart
 end
 
-# def consolidate_cart(cart) # if you iterate through the item
-#   consolidated_cart = {}
-#
-#   cart.each do |item|
-#     item.each do |name, details|
-#       if consolidated_cart[name]
-#         consolidated_cart[name][:count] += 1
-#       else
-#         consolidated_cart[name] = details
-#         consolidated_cart[name][:count] = 1
-#       end
-#     end
-#   end
-#   consolidated_cart
-# end
+def consolidate_cart(cart) # if you iterate through the item
+  consolidated_cart = {}
+  cart.each do |item|
+    item.each do |name, details|
+      if consolidated_cart[name]
+        consolidated_cart[name][:count] += 1
+      else
+        consolidated_cart[name] = details
+        consolidated_cart[name][:count] = 1
+      end
+    end
+  end
+  consolidated_cart
+end
 
 
 def apply_coupons(cart, coupons)
   coupons.each do |coupon|
-    if cart[coupon[:item]] && cart[coupon[:item]][:count] >= coupon[:num] # this method will pass without second half of condition but will cause checkout method to fail
-      if cart["#{coupon[:item]} W/COUPON"]
-        cart["#{coupon[:item]} W/COUPON"][:count] += coupon[:num]
-
+    item_name = coupon[:item]
+    if cart[item_name] && cart[item_name][:count] >= coupon[:num] # this method will pass without second half of condition but will cause checkout method to fail later
+      if cart["#{item_name} W/COUPON"]
+        cart["#{item_name} W/COUPON"][:count] += coupon[:num]
       else
-        cart["#{coupon[:item]} W/COUPON"] = {
+        cart["#{item_name} W/COUPON"] = {
           price: coupon[:cost] / coupon[:num],
-          clearance: cart[coupon[:item]][:clearance],
+          clearance: cart[item_name][:clearance],
           count: coupon[:num]
         }
       end
-      cart[coupon[:item]][:count] -= coupon[:num]
+      cart[item_name][:count] -= coupon[:num]
     end
   end
   cart
@@ -68,7 +66,7 @@ def checkout(cart, coupons)
 
   total = 0
   final_cart.each do |item_name, details|
-    total += details[:price]*details[:count]
+    total += details[:price] * details[:count]
   end
   total > 100 ? total * 0.9 : total
 end
